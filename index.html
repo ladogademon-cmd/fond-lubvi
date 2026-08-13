@@ -83,7 +83,7 @@ h1 .heart path{fill:var(--wine)}
 .progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ink),var(--wine));transition:width .45s ease}
 .foot-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}
 #stats{font-family:"JetBrains Mono";font-size:12px;color:var(--ink-soft)}
-.spin-entry{margin-top:24px;text-align:center}
+.spin-entry{margin-top:24px;display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap}
 
 .outro-line{font-family:"PT Serif";font-style:italic;font-size:clamp(1.05rem,3.8vw,1.25rem);text-align:center;line-height:1.5;margin-top:36px}
 .outro-line span{color:var(--wine)}
@@ -93,7 +93,6 @@ h1 .heart path{fill:var(--wine)}
 .sign .paw{width:clamp(120px,36vw,170px);height:auto;flex:0 0 auto;position:relative;z-index:2;mix-blend-mode:multiply;margin-left:-52px;transform:rotate(-12deg);animation:stamp .55s cubic-bezier(.3,1.4,.4,1) .5s both}
 .sign .paw-img{width:clamp(120px,36vw,170px);height:clamp(120px,36vw,170px);object-fit:contain;flex:0 0 auto;position:relative;z-index:2;mix-blend-mode:multiply;margin-left:-52px;transform:rotate(-12deg);animation:stamp .55s cubic-bezier(.3,1.4,.4,1) .5s both}
 @keyframes stamp{0%{opacity:0;transform:scale(1.7) rotate(8deg)}55%{opacity:.95;transform:scale(.92) rotate(-15deg)}100%{opacity:1;transform:scale(1) rotate(-12deg)}}
-.hb-entry{display:inline-block;margin-top:20px;font-family:"JetBrains Mono";font-size:11px;color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted currentColor}
 
 /* лапа: реальная подменяет SVG */
 .paw-img{display:none}
@@ -252,7 +251,10 @@ input[type=date]{padding:6px 8px;border:1.5px solid var(--rule);border-radius:8p
     </form>
   </div>
 
-  <div class="spin-entry"><a class="btn btn-ink big" href="#spin">Борис выбирает ♥</a></div>
+  <div class="spin-entry">
+    <a class="btn btn-ink big" href="#spin">Борис выбирает ♥</a>
+    <a class="btn btn-ghost" href="#h">тетрадь Бориса →</a>
+  </div>
 
   <div class="foot">
     <div class="progress"><i id="bar"></i></div>
@@ -276,7 +278,6 @@ input[type=date]{padding:6px 8px;border:1.5px solid var(--rule);border-radius:8p
       <ellipse cx="49.5" cy="23" rx="5.6" ry="8" transform="rotate(24 49.5 23)"/>
       <ellipse cx="31" cy="42" rx="15" ry="12.5"/></g></svg>
   </div>
-  <a class="hb-entry" id="hbLink" href="#h" hidden>тетрадь Бориса →</a>
 </div>
 
 <!-- ============ ПАРОЛЬ ============ -->
@@ -334,21 +335,69 @@ const CLOUD_URL='https://script.google.com/macros/s/AKfycbz1QW7UCf-LkoryDzdowSDX
 
 const SECTIONS=[
  {id:'walk', name:'Прогулки', items:[
-   {id:'w1',t:'Набережная на закате',u:'https://yandex.ru/maps/?text=набережная'},
-   {id:'w2',t:'Старые улочки и стрит-арт',u:'https://yandex.ru/maps/?text=стрит-арт'},
-   {id:'w3',t:'Оранжерея ботанического сада',u:'https://yandex.ru/maps/?text=ботанический сад оранжерея'}]},
+   {id:'w1',t:'Наш любимый сад',u:'https://yandex.ru/maps/org/lopukhinskiy_sad/148173773777/?ll=30.301150%2C59.977123&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=16.36'},
+   {id:'w2',t:'Кормить гусей и белок',u:'https://yandex.ru/maps/org/tsentralny_park_kultury_i_otdykha_im_s_m_kirova/1028899590/?ll=30.263695%2C59.977281&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=15.16'},
+   {id:'w3',t:'Искать ежей',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.330586%2C59.989350&mode=poi&poi%5Bpoint%5D=30.340309%2C59.994326&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D196798172259&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=14.71'},
+   {id:'w4',t:'Тихая прогулка',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.357620%2C59.901953&mode=poi&poi%5Bpoint%5D=30.359191%2C59.904299&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D1065843753%26yclid%3D15199103814062833663&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=15.91'},
+   {id:'w5',t:'Пройти весь Невский',u:'https://yandex.ru/maps/2/saint-petersburg/stops/station__9805884/?ll=30.325808%2C59.934756&tab=overview&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=15.71'},
+   {id:'w6',t:'Посмотреть на мосты',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.308142%2C59.941141&mode=poi&poi%5Bpoint%5D=30.308016%2C59.941239&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D155902380365&tilt=0.8726646259971648&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=17.96'},
+   {id:'w7',t:'Таврический сад',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.359428%2C59.939694&mode=poi&poi%5Bpoint%5D=30.373139%2C59.945434&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D4436812486&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=14.56'},
+   {id:'w8',t:'Ботанический сад',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.324699%2C59.963058&mode=poi&poi%5Bpoint%5D=30.325341%2C59.969870&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D42921368624&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=14.76'},
+   {id:'w9',t:'Прокатиться на электроне до Выборга',u:'https://yandex.ru/maps/?ll=29.398056%2C60.460846&mode=poi&poi%5Bpoint%5D=28.748851%2C60.711009&poi%5Buri%5D=ymapsbm1%3A%2F%2Fgeo%3Fdata%3DCgg1MzE0OTUyOBJF0KDQvtGB0YHQuNGPLCDQm9C10L3QuNC90LPRgNCw0LTRgdC60LDRjyDQvtCx0LvQsNGB0YLRjCwg0JLRi9Cx0L7RgNCzIgoNj__lQRWN13JC&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=10.16'},
+   {id:'w10',t:'Погулять по Пушкину',u:'https://yandex.ru/maps/10884/pushkin/?ll=30.381248%2C59.716672&mode=poi&poi%5Bpoint%5D=30.416705%2C59.722463&poi%5Buri%5D=ymapsbm1%3A%2F%2Fgeo%3Fdata%3DCgg1MzE2NjM4NhI50KDQvtGB0YHQuNGPLCDQodCw0L3QutGCLdCf0LXRgtC10YDQsdGD0YDQsywg0J_Rg9GI0LrQuNC9IgoNiVXzQRWs425C&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=10.76'},
+   {id:'w11',t:'Погулять по Павловску',u:'https://yandex.ru/maps/geo/pavlovsk/53166388/?ll=30.417506%2C59.704184&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=10.96'},
+   {id:'w12',t:'Посмотреть на фонтаны',u:'https://yandex.ru/maps/geo/petergof/53166387/?ll=30.216310%2C59.794672&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=10.96'},
+   {id:'w13',t:'Узнать что в Ломоносове',u:'https://yandex.ru/maps/geo/lomonosov/53166389/?ll=29.765507%2C59.926183&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=13.16'},
+   {id:'w14',t:'Покататься на кораблике',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.333843%2C59.929419&mode=whatshere&utm_campaign=desktop&utm_medium=search&utm_source=maps&whatshere%5Bpoint%5D=30.334250%2C59.928014&whatshere%5Bzoom%5D=16.08&z=16.08'},
+   {id:'w15',t:'Летний сад',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.335069%2C59.941390&mode=poi&poi%5Bpoint%5D=30.335554%2C59.944906&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D1021396158&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=16.04'}]},
  {id:'taste', name:'Кафе и рестораны', items:[
-   {id:'t1',t:'Завтрак в новом кафе',u:'https://yandex.ru/maps/?text=кафе с завтраками'},
-   {id:'t2',t:'Дегустация десертов',u:'https://yandex.ru/maps/?text=кондитерская'},
-   {id:'t3',t:'Гастрономический рынок',u:'https://yandex.ru/maps/?text=гастрономический рынок'}]},
+   {id:'t1',t:'Настойки на Севере',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.332101%2C59.981522&mode=poi&poi%5Bpoint%5D=30.333521%2C59.982015&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D54970672063&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=16.39'},
+   {id:'t2',t:'Сад',u:'https://yandex.ru/maps/2/saint-petersburg/house/bolshaya_zelenina_ulitsa_23k2/Z0kYdA9pS0YEQFtjfXV3cnxqZw==/?ll=30.289814%2C59.962824&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=18.96'},
+   {id:'t3',t:'Ватерзой',u:'https://yandex.ru/maps/2/saint-petersburg/?indoorLevel=3&ll=30.320746%2C59.926029&mode=poi&poi%5Bpoint%5D=30.320044%2C59.925985&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D187761169106%26yclid%3D12749278810935132159&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=19.01'},
+   {id:'t4',t:'Сербская таверна',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.344594%2C59.964421&mode=poi&poi%5Bpoint%5D=30.344045%2C59.963924&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D21422857164&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=18.39'},
+   {id:'t5',t:'Vox',u:'https://yandex.ru/maps/2/saint-petersburg/house/solyanoy_pereulok_16/Z0kYdQNhQU0EQFtjfXV1c3RqZA==/?ll=30.342107%2C59.942510&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=18.32'},
+   {id:'t6',t:'Self Edge Japanese',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.364941%2C59.940844&mode=poi&poi%5Bpoint%5D=30.363411%2C59.941295&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D25031157563%26yclid%3D2700373151464554495&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=17.36'},
+   {id:'t7',t:'Nola Jazz Bar',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.322187%2C59.938372&mode=poi&poi%5Bpoint%5D=30.321113%2C59.938354&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D233512176817%26yclid%3D5394618609813946367&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=18.45'},
+   {id:'t8',t:'Нихао Москва-Пекин',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.329091%2C59.973479&mode=poi&poi%5Bpoint%5D=30.327004%2C59.973589&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D102499022736&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=17.69'},
+   {id:'t9',t:'Zavod',u:'https://yandex.ru/maps/org/zavod/12139185596/?ll=30.361922%2C59.938771&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=19.69'},
+   {id:'t10',t:'Poly',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.347166%2C59.937973&mode=poi&poi%5Bpoint%5D=30.347115%2C59.938142&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D4847316066&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=18.31'},
+   {id:'t11',t:'Duo',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.351235%2C59.944215&mode=poi&poi%5Bpoint%5D=30.351730%2C59.944231&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D1139174868&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=17.29'},
+   {id:'t12',t:'Mad Asian BBQ',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.283059%2C59.960476&mode=poi&poi%5Bpoint%5D=30.282150%2C59.960554&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D45809458231&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=17.94'},
+   {id:'t13',t:'Ukusno',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.298672%2C59.958382&mode=poi&poi%5Bpoint%5D=30.297495%2C59.958271&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D240124826102&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=17.81'},
+   {id:'t14',t:'Пузата хата',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.362655%2C59.938529&mode=poi&poi%5Bpoint%5D=30.361950%2C59.938829&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D1020134742&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=19.29'},
+   {id:'t15',t:'Bolshoy bar',u:'https://yandex.ru/maps/org/bolshoy_bar/1388524924/?ll=30.311706%2C59.961463&mode=search&text=%D0%B1%D0%BE%D0%BB%D1%8C%D1%88%D0%BE%D0%B9%20%D0%B1%D0%B0%D1%80&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=16.83'},
+   {id:'t16',t:'Пища династии Минь',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.350455%2C59.942481&mode=poi&poi%5Bpoint%5D=30.350272%2C59.942499&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D163569643004&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=19.7'},
+   {id:'t17',t:'Frank',u:'https://yandex.ru/maps/2/saint-petersburg/?indoorLevel=1&ll=30.323296%2C59.927177&mode=poi&poi%5Bpoint%5D=30.323089%2C59.927459&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D237661689774&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=18.61'},
+   {id:'t18',t:'Ипполит',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.320516%2C59.930591&mode=poi&poi%5Bpoint%5D=30.318283%2C59.930743&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D12554956999&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=16.9'}]},
  {id:'soul', name:'Культура', items:[
-   {id:'s1',t:'Выставка, о которой все говорят',u:'https://yandex.ru/maps/?text=художественный музей'},
-   {id:'s2',t:'Вечер в театре',u:'https://yandex.ru/maps/?text=театр'},
-   {id:'s3',t:'Музей, где ты ещё не была',u:'https://yandex.ru/maps/?text=музей'}]},
+   {id:'s1',t:'Окультуриться в Эрмитаже',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.329210%2C59.938736&mode=poi&poi%5Bpoint%5D=30.312943%2C59.940924&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D7843287595&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=15.64'},
+   {id:'s2',t:'Погулять по Русскому музею',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.330703%2C59.938679&mode=poi&poi%5Bpoint%5D=30.332382%2C59.938783&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D1094851452&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=16.04'},
+   {id:'s3',t:'Посетить Михайловский замок',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.337041%2C59.940435&mode=poi&poi%5Bpoint%5D=30.337057%2C59.940256&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D1054499493&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=16.04'},
+   {id:'s4',t:'Посетить цирк',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.339508%2C59.939302&mode=poi&poi%5Bpoint%5D=30.341184%2C59.938573&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D204574395438&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=16.04'},
+   {id:'s5',t:'Оценить концептуальное искусство',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.252545%2C59.931662&mode=poi&poi%5Bpoint%5D=30.250893%2C59.932381&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D1002014829&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=17.57'},
+   {id:'s6',t:'Посмотреть на поезда',u:'https://yandex.ru/maps/2/saint-petersburg/?indoorLevel=1&ll=30.299734%2C59.906238&mode=poi&poi%5Bpoint%5D=30.297754%2C59.905685&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D10417953828&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=16.77'},
+   {id:'s7',t:'Музей-усадьба Державина',u:'https://www.museumpushkin.ru/vserossijskij_muzej_a._s._pushkina/muzej-usadba_g.r.derzhavina.html'},
+   {id:'s8',t:'Сходить на спектакль',u:''},
+   {id:'s9',t:'Сходить на оперу',u:''},
+   {id:'s10',t:'Сходить на балет',u:''},
+   {id:'s11',t:'Послушать музыку в филармонии',u:''},
+   {id:'s12',t:'Послушать музыку',u:''},
+   {id:'s13',t:'Разгадать тайну смерти Распутина',u:'https://yandex.ru/maps/2/saint-petersburg/?ll=30.311121%2C59.917782&mode=poi&poi%5Bpoint%5D=30.314665%2C59.922058&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D4186648669&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=15.84'},
+   {id:'s14',t:'Посмотреть на женщин',u:'https://yandex.ru/maps/org/burlesk_kabare_letuchaya_mysh/161866170639/?ll=30.324762%2C59.943638&utm_campaign=desktop&utm_medium=search&utm_source=maps&z=17.29'}]},
  {id:'act', name:'Активности', items:[
-   {id:'a1',t:'Велопрогулка вдвоём',u:'https://yandex.ru/maps/?text=велопрокат'},
-   {id:'a2',t:'Скалодром: первое занятие',u:'https://yandex.ru/maps/?text=скалодром'},
-   {id:'a3',t:'Мастер-класс по керамике',u:'https://yandex.ru/maps/?text=мастер-класс керамика'}]}
+   {id:'a1',t:'Велосипедная прогулка',u:''},
+   {id:'a2',t:'Поход в баню',u:''},
+   {id:'a3',t:'Поиграть в бильярд',u:''},
+   {id:'a4',t:'Поиграть в боулинг',u:''},
+   {id:'a5',t:'Поход в кино',u:''},
+   {id:'a6',t:'Мастер-класс по живописи',u:''},
+   {id:'a7',t:'Мастер-класс по керамике',u:''},
+   {id:'a8',t:'Мастер-класс по матрёшкам',u:''},
+   {id:'a9',t:'Мастер-класс по духам',u:''},
+   {id:'a10',t:'Поиграть в городки',u:''},
+   {id:'a11',t:'Посетить скалодром',u:''},
+   {id:'a12',t:'Посетить батутный центр',u:''},
+   {id:'a13',t:'Посмотреть на Стася на волейболе',u:''}]}
 ];
 const MEOW=['Мяу!','Мау!','Уррр','Урк','А меня возьмете?','Я с Вами!','Ну, мааам','Не забудьте покормить меня','Я тоже хочу','Не забудьте купить мне игрушку','И без меня?!'];
 const TOTAL=SECTIONS.reduce((s,x)=>s+x.items.length,0);
@@ -502,7 +551,6 @@ function renderSurvey(){
   });
  });
  wifeStats();
- $('#hbLink').hidden=!husb;
  bindPaws($('#viewSurvey'));
 }
 function applyMark(li,st){
