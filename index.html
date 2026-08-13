@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f2ecdc">
+<title>Фонд лубви — опрос</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,700;1,400&family=Caveat:wght@500;700&family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f2ecdc; --sheet:#fbf7ec; --ink:#43302a; --ink-soft:#8a7767;
+  --rule:#e4d8bf; --wine:#7a2133; --wine-soft:rgba(122,33,51,.08);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+body{font-family:"Golos Text",system-ui,sans-serif;color:var(--ink);min-height:100vh;
+  background:radial-gradient(900px 480px at 100% 0%,rgba(122,33,51,.07),transparent 60%),
+  radial-gradient(800px 520px at 0% 100%,rgba(133,102,67,.12),transparent 60%),var(--bg)}
+body::after{content:"♥";position:fixed;right:-8vw;bottom:-14vw;font-family:"PT Serif";font-size:46vw;color:rgba(122,33,51,.05);transform:rotate(-12deg);pointer-events:none;z-index:0}
+.sheet{position:relative;z-index:1;max-width:640px;margin:clamp(14px,4vw,48px) auto;
+  padding:clamp(24px,5vw,44px) clamp(16px,4vw,36px) 30px;background:var(--sheet);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:0 20px 50px rgba(67,48,42,.12)}
+#viewAlbum{max-width:1040px}
+h1{font-family:"PT Serif";font-weight:700;font-size:clamp(1.7rem,6.4vw,2.3rem);line-height:1.15;margin:0 0 10px}
+h1 .heart{width:.72em;height:.72em;vertical-align:-.05em;margin-right:.18em;animation:beat 2.4s ease-in-out infinite;transform-origin:center}
+h1 .heart path{fill:var(--wine)}
+@keyframes beat{0%,100%{transform:scale(1)}12%{transform:scale(1.25)}24%{transform:scale(1)}}
+.sub{font-size:15px;line-height:1.55;color:var(--ink-soft);max-width:52ch}
+.h-sub{font-family:"JetBrains Mono";font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--wine);margin:0 0 14px}
+
+.sec-h{font-family:"Caveat";font-size:26px;font-weight:700;margin:26px 0 6px;color:var(--ink)}
+.list{list-style:none;border-top:1px solid var(--rule)}
+.item{padding:14px 2px;border-bottom:1px solid var(--rule);transition:background .25s}
+.item.answered{background:linear-gradient(90deg,rgba(122,33,51,.04),transparent 70%)}
+.q-row{display:flex;gap:12px;align-items:flex-start}
+.idx{font-family:"JetBrains Mono";font-size:12px;color:var(--ink-soft);padding-top:4px;min-width:22px}
+.txt{flex:1;background:none;border:none;padding:0;text-align:left;cursor:pointer;
+  font:500 16px/1.45 "Golos Text";color:var(--ink);border-bottom:1px dashed transparent;transition:color .15s,border-color .15s}
+.txt:hover{color:var(--wine);border-bottom-color:rgba(122,33,51,.5)}
+.marks{display:flex;gap:6px}
+.mark{width:42px;height:42px;display:grid;place-items:center;background:none;border:none;cursor:pointer;border-radius:10px;transition:background .15s,transform .12s}
+.mark:hover{background:rgba(67,48,42,.07)}
+.mark.no:hover{background:var(--wine-soft)}
+.mark:active{transform:scale(.9)}
+.mark:focus-visible{outline:2px solid var(--wine);outline-offset:2px}
+.mark .box{width:27px;height:27px;border:2px solid rgba(67,48,42,.4);border-radius:6px;display:grid;place-items:center;transition:border-color .15s,background .15s}
+.mark.no .box{border-color:rgba(122,33,51,.45)}
+.mark svg{width:100%;height:100%;overflow:visible;display:block}
+.mark path{fill:none;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:26;stroke-dashoffset:26;transition:stroke-dashoffset .3s ease .05s}
+.mark.no path{stroke:var(--wine)} .mark.yes path{stroke:var(--ink)}
+.mark.no path:nth-child(2){transition-delay:.16s}
+.mark.yes.active .box{border-color:var(--ink);background:rgba(67,48,42,.10)}
+.mark.no.active .box{border-color:var(--wine);background:var(--wine-soft)}
+.mark.active path{stroke-dashoffset:0}
+.pop{margin:8px 0 2px 34px}
+.pop a{display:inline-flex;background:var(--ink);color:#f5efe2;font:600 12.5px "Golos Text";
+  padding:9px 14px;border-radius:10px 10px 10px 3px;text-decoration:none;transition:background .15s,transform .15s}
+.pop a:hover{background:var(--wine);transform:translateY(-1px)}
+
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:10px 18px;
+  font:600 14px "Golos Text";cursor:pointer;border:1.5px solid transparent;transition:.15s;text-decoration:none}
+.btn:active{transform:scale(.96)}
+.btn:disabled{opacity:.6;cursor:wait}
+.btn-wine{background:var(--wine);color:#fbf7ec}
+.btn-wine:hover{background:#641a2a}
+.btn-ink{background:var(--ink);color:var(--sheet)}
+.btn-ink:hover{background:#2e211c}
+.btn-ghost{background:transparent;border-color:rgba(67,48,42,.35);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--wine);color:var(--wine);background:var(--wine-soft)}
+.btn.big{padding:14px 26px;font-size:16px}
+.btn.sm{padding:6px 12px;font-size:12px}
+
+.add-wrap{margin-top:18px}
+.add-form{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.add-form input{flex:1 1 160px;padding:10px 14px;border:1.5px solid var(--rule);border-radius:10px;background:#fff;font:400 14px "Golos Text";color:var(--ink)}
+.add-form input[type=date]{flex:0 0 auto;font:12px "JetBrains Mono"}
+.add-form input:focus{outline:none;border-color:var(--wine)}
+
+.foot{margin-top:24px}
+.progress{height:4px;background:rgba(67,48,42,.12);border-radius:2px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ink),var(--wine));transition:width .45s ease}
+.foot-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}
+#stats{font-family:"JetBrains Mono";font-size:12px;color:var(--ink-soft)}
+.spin-entry{margin-top:24px;text-align:center}
+
+.outro-line{font-family:"PT Serif";font-style:italic;font-size:clamp(1.05rem,3.8vw,1.25rem);text-align:center;line-height:1.5;margin-top:36px}
+.outro-line span{color:var(--wine)}
+.sign{display:flex;justify-content:flex-end;align-items:center;margin-top:26px;transform:rotate(-2deg)}
+.sign-text{font-family:"Caveat";font-size:20px;line-height:1.2;text-align:right;color:var(--ink)}
+.sign-text b{font-size:28px;font-weight:700}
+.sign .paw{width:clamp(120px,36vw,170px);height:auto;flex:0 0 auto;position:relative;z-index:2;mix-blend-mode:multiply;margin-left:-52px;transform:rotate(-12deg);animation:stamp .55s cubic-bezier(.3,1.4,.4,1) .5s both}
+.sign .paw-img{width:clamp(120px,36vw,170px);height:clamp(120px,36vw,170px);object-fit:contain;flex:0 0 auto;position:relative;z-index:2;mix-blend-mode:multiply;margin-left:-52px;transform:rotate(-12deg);animation:stamp .55s cubic-bezier(.3,1.4,.4,1) .5s both}
+@keyframes stamp{0%{opacity:0;transform:scale(1.7) rotate(8deg)}55%{opacity:.95;transform:scale(.92) rotate(-15deg)}100%{opacity:1;transform:scale(1) rotate(-12deg)}}
+.hb-entry{display:inline-block;margin-top:20px;font-family:"JetBrains Mono";font-size:11px;color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted currentColor}
+
+/* лапа: реальная подменяет SVG */
+.paw-img{display:none}
+.paw-img.ok{display:block}
+.paw-img.ok + svg{display:none}
+
+/* пароль */
+.gate{text-align:center}
+.gate .sub{margin:0 auto 18px}
+.gate .add-form{justify-content:center}
+.gate-err{color:var(--wine);font-size:13px;margin-top:12px}
+.hb-back{margin-top:16px}
+.hb-back a{font-family:"JetBrains Mono";font-size:11px;color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted currentColor}
+.gate .paw-img{width:88px;height:88px;margin:0 auto 6px;object-fit:contain;transform:rotate(-10deg)}
+.gate-paw{width:88px;height:88px;margin:0 auto 6px;display:block;transform:rotate(-10deg)}
+
+/* рулетка */
+.roulette{margin-top:20px;padding:18px;border:1.5px dashed rgba(122,33,51,.45);border-radius:14px;background:var(--wine-soft)}
+.r-card{background:#fffdf4;border:1px solid var(--rule);border-radius:12px;padding:16px;margin:12px 0;min-height:64px}
+.r-sec{font-family:"JetBrains Mono";font-size:11px;color:var(--ink-soft)}
+.r-title{font-family:"PT Serif";font-size:20px;font-weight:700;margin-top:4px}
+.r-hint{color:var(--ink-soft);font-size:14px}
+.r-actions{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.r-meow{display:inline-block;font-family:"Caveat";font-size:24px;font-weight:700;color:var(--wine);
+  background:#fffdf4;border:1.5px solid var(--rule);border-radius:12px 12px 12px 3px;padding:6px 16px;
+  margin-top:12px;transform:rotate(-2deg);animation:stamp .45s cubic-bezier(.3,1.6,.4,1) both}
+
+/* тетрадь */
+.nav-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.hrow{display:flex;align-items:center;gap:10px;padding:10px 2px;border-bottom:1px solid var(--rule)}
+.hrow a{flex:1;font:500 15px/1.4 "Golos Text";color:var(--ink);text-decoration:none;border-bottom:1px dashed transparent}
+.hrow a:hover{color:var(--wine);border-bottom-color:rgba(122,33,51,.5)}
+.vdate{font-family:"JetBrains Mono";font-size:11px;color:var(--wine);border:1px solid rgba(122,33,51,.4);padding:4px 9px;border-radius:999px;white-space:nowrap}
+.v-card{border:1px solid var(--rule);border-radius:12px;background:#fffdf4;padding:14px;margin:12px 0}
+.v-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.v-date{font-family:"JetBrains Mono";font-size:12px;color:var(--wine)}
+.v-place{font-weight:600;margin:6px 0 10px}
+.v-photos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.v-photos img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;border:1px solid var(--rule)}
+.v-add{aspect-ratio:1;display:grid;place-items:center;border:1.5px dashed rgba(67,48,42,.35);border-radius:8px;color:var(--ink-soft);font-size:20px;cursor:pointer;transition:.15s;background:none}
+.v-add:hover{border-color:var(--wine);color:var(--wine)}
+.v-note{font-size:12px;color:var(--ink-soft);margin-top:8px}
+.complete{margin-top:26px;padding:14px;text-align:center;font-family:"Caveat";font-size:26px;color:var(--wine)}
+input[type=date]{padding:6px 8px;border:1.5px solid var(--rule);border-radius:8px;font:12px "JetBrains Mono";color:var(--ink);background:#fff}
+
+/* ========== АЛЬБОМ ========== */
+.alb-strip{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:12px 2px 20px}
+.alb-slot{flex:0 0 auto;scroll-snap-align:center;width:calc(24cm * var(--albs,1));height:calc(16cm * var(--albs,1))}
+.alb-slot .page{transform:scale(var(--albs,1));transform-origin:0 0;margin:0}
+.page{position:relative;width:24cm;height:16cm;background:var(--sheet);
+  border:1px solid var(--rule);border-radius:4px;box-shadow:0 14px 30px rgba(67,48,42,.25);overflow:hidden}
+.page-num{position:absolute;right:.7cm;bottom:.5cm;font-family:"JetBrains Mono";font-size:10px;color:var(--ink-soft);letter-spacing:.08em;z-index:5}
+.page-title{font-family:"Caveat";font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--wine);position:absolute;top:.55cm;left:.8cm;z-index:5}
+.page-info{position:absolute;bottom:.55cm;left:.8cm;z-index:5}
+.page-date{font-family:"Caveat";font-size:24px;font-weight:700;color:var(--wine);transform:rotate(-1.5deg);line-height:1}
+.page-place{font:600 13px/1.3 "Golos Text";margin-top:4px}
+.page-place .r{font-family:"JetBrains Mono";font-size:10px;color:var(--ink-soft)}
+.page-stamp{position:absolute;top:.55cm;right:.8cm;font-family:"JetBrains Mono";font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--wine);border:1.5px solid currentColor;border-radius:3px;padding:3px 7px;transform:rotate(-2deg);z-index:5}
+.page-paw{position:absolute;top:1.7cm;right:.9cm;width:2.4cm;height:2.4cm;transform:rotate(-14deg);z-index:5;opacity:.9}
+.page-paw svg{width:100%;height:100%}
+.page-paw .paw-img{width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}
+.page-paw svg g{fill:var(--wine)}
+
+.pol{position:absolute;width:8.8cm;height:10.8cm;background:#fff;padding:.5cm .5cm 2.2cm .5cm;
+  box-shadow:0 4px 10px rgba(67,48,42,.22),0 1px 2px rgba(67,48,42,.18);z-index:2;cursor:zoom-in}
+.pol::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent 60%);pointer-events:none}
+.pol img{width:100%;height:calc(10.8cm - 2.2cm - 1cm);object-fit:cover;display:block;pointer-events:none}
+.psolo{left:50%;bottom:2.2cm;transform:translateX(-50%) rotate(-2deg)}
+
+.L1 .p1{left:1.5cm;bottom:1.8cm;transform:rotate(-4deg)}
+.L1 .p2{left:7.6cm;bottom:2.0cm;transform:rotate(2deg);z-index:3}
+.L1 .p3{left:13.7cm;bottom:1.7cm;transform:rotate(-3deg)}
+.L2 .p1{left:2.4cm;bottom:2.0cm;transform:rotate(-11deg)}
+.L2 .p2{left:7.6cm;bottom:2.3cm;transform:rotate(2deg);z-index:3}
+.L2 .p3{left:12.7cm;bottom:2.2cm;transform:rotate(15deg)}
+.L3 .p1{left:1.7cm;top:1.5cm;transform:rotate(-7deg)}
+.L3 .p2{left:8.1cm;bottom:1.8cm;transform:rotate(5deg);z-index:3}
+.L3 .p3{right:1.7cm;top:1.5cm;transform:rotate(-2deg)}
+.L4 .p1{left:1.7cm;bottom:1.8cm;transform:rotate(-5deg)}
+.L4 .p2{left:7.6cm;bottom:2.6cm;transform:rotate(-1deg);z-index:3}
+.L4 .p3{left:13.5cm;bottom:3.4cm;transform:rotate(4deg)}
+.L5 .p1{left:1.5cm;bottom:1.8cm;transform:rotate(-5deg);z-index:1}
+.L5 .p2{left:7.4cm;bottom:2.6cm;transform:rotate(3deg);z-index:2}
+.L5 .p3{left:13.3cm;bottom:1.8cm;transform:rotate(-2deg);z-index:3}
+
+.covC .paw-big{position:absolute;left:50%;top:50%;width:9cm;height:9cm;transform:translate(-50%,-50%) rotate(-10deg);opacity:.10}
+.covC .paw-big g{fill:var(--wine)}
+.covC .paw-img{position:absolute;right:1.6cm;bottom:1.6cm;width:4.6cm;height:4.6cm;object-fit:contain;mix-blend-mode:multiply;opacity:.9;transform:rotate(-12deg)}
+.covC .cov-kicker{position:absolute;top:2.3cm;left:0;right:0;text-align:center;
+  font-family:"JetBrains Mono";font-size:17.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--wine)}
+.covC .cov-title{position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);text-align:center;
+  font-family:"PT Serif";font-weight:700;font-size:44px;color:var(--ink)}
+.covC .cov-stats{position:absolute;bottom:2.2cm;left:0;right:0;text-align:center;
+  font-family:"JetBrains Mono";font-size:17.5px;letter-spacing:.05em;color:var(--ink-soft)}
+
+.fin{display:grid;place-items:center;text-align:center}
+.fin-title{font-family:"Caveat";font-size:44px;font-weight:700;color:var(--wine);transform:rotate(-2deg)}
+.fin-count{font-family:"Caveat";font-size:24px;color:var(--ink-soft);margin-top:.4cm}
+.fin-count b{color:var(--wine);font-size:28px}
+.fin .paw-img{width:4.5cm;height:4.5cm;margin:.6cm auto 0;object-fit:contain;mix-blend-mode:multiply;opacity:.9;transform:rotate(-12deg)}
+.paw-fin{width:4.5cm;height:4.5cm;margin:.6cm auto 0;transform:rotate(-12deg);opacity:.9}
+.paw-fin g{fill:var(--wine)}
+.fin-sign{font-family:"Caveat";font-size:18px;line-height:1.15;color:var(--ink-soft);margin-top:.5cm;transform:rotate(-2deg)}
+.fin-sign b{display:block;color:var(--wine);font-size:22px;font-weight:700}
+
+.alb-arrows{display:flex;justify-content:center;gap:10px;margin-top:6px}
+.alb-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;justify-content:center}
+
+/* полноэкранный просмотр */
+.lb{position:fixed;inset:0;background:rgba(24,17,12,.94);z-index:60;display:grid;place-items:center;padding:16px}
+.lb figure{max-width:92vw;text-align:center}
+.lb img{max-width:92vw;max-height:78vh;border:8px solid #fff;box-shadow:0 20px 60px rgba(0,0,0,.5);display:inline-block}
+.lb figcaption{font-family:"Caveat";font-size:22px;color:#f0dace;margin-top:12px}
+.lb-x{position:absolute;top:12px;right:14px;background:none;border:none;color:#f0dace;font-size:30px;cursor:pointer;line-height:1}
+.lb-nav{position:absolute;top:50%;transform:translateY(-50%);background:none;border:none;color:#f0dace;font-size:34px;cursor:pointer;padding:10px}
+.lb-prev{left:6px}.lb-next{right:6px}
+
+/* печать альбома */
+@media print{
+  @page{size:landscape}
+  body{background:#fff}
+  body::after{display:none}
+  #viewSurvey,#viewGate,#viewSpin,#viewNotebook{display:none!important}
+  .alb-arrows,.alb-tools,.h-sub,.lb{display:none!important}
+  #viewAlbum h1{display:none}
+  .sheet{box-shadow:none;border:none;margin:0;max-width:none;padding:0}
+  .alb-strip{display:block;overflow:visible;padding:0}
+  .alb-slot{width:auto!important;height:auto!important}
+  .alb-slot .page{transform:none!important;box-shadow:none;break-after:page}
+}
+
+.modal{position:fixed;inset:0;background:rgba(67,48,42,.45);display:grid;place-items:center;padding:20px;z-index:50}
+.modal-sheet{background:var(--sheet);border-radius:14px;padding:24px;max-width:480px;width:100%;box-shadow:0 30px 60px rgba(0,0,0,.3)}
+.modal-sheet h3{font-family:"PT Serif";font-size:22px;margin-bottom:8px}
+.modal-sheet p{font-size:14px;color:var(--ink-soft);line-height:1.5}
+.modal-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ============ ОПРОС (ЖЕНА) ============ -->
+<div class="sheet" id="viewSurvey">
+  <h1><svg class="heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>Фонд лубви предлагает:</h1>
+  <p class="sub">Выбирай, куда сходим вместе. «Да» — идём, «нет» — пропускаем. Если непонятно, что за место — нажми на название, подскажу.</p>
+
+  <div id="surveyBody"></div>
+
+  <div class="add-wrap">
+    <button id="addBtn" class="btn btn-ghost" type="button">+ добавить свою идею</button>
+    <form id="addForm" class="add-form" hidden>
+      <input id="addName" required maxlength="80" placeholder="Что за идея?">
+      <input id="addUrl" maxlength="200" placeholder="Ссылка (необязательно)">
+      <button class="btn btn-ink" type="submit">добавить</button>
+    </form>
+  </div>
+
+  <div class="spin-entry"><a class="btn btn-ink big" href="#spin">Борис выбирает ♥</a></div>
+
+  <div class="foot">
+    <div class="progress"><i id="bar"></i></div>
+    <div class="foot-row">
+      <span id="stats"></span>
+      <span style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost" id="resetBtn" type="button">начать заново</button>
+        <button class="btn btn-wine" id="doneBtn" type="button">готово ♥</button>
+      </span>
+    </div>
+  </div>
+
+  <p class="outro-line">Все мероприятия подобраны с особым трепетом и <span>лубовью</span></p>
+  <div class="sign">
+    <p class="sign-text">С уважением,<br>Ваш почетный секретарь<br><b>Борис</b></p>
+    <img class="paw-img" src="boris-paw.png" alt="">
+    <svg class="paw" viewBox="0 0 64 64" aria-hidden="true"><g fill="var(--wine)" opacity=".9">
+      <ellipse cx="12.5" cy="23" rx="5.6" ry="8" transform="rotate(-24 12.5 23)"/>
+      <ellipse cx="24.5" cy="14.5" rx="5.8" ry="8.6" transform="rotate(-8 24.5 14.5)"/>
+      <ellipse cx="37.5" cy="14.5" rx="5.8" ry="8.6" transform="rotate(8 37.5 14.5)"/>
+      <ellipse cx="49.5" cy="23" rx="5.6" ry="8" transform="rotate(24 49.5 23)"/>
+      <ellipse cx="31" cy="42" rx="15" ry="12.5"/></g></svg>
+  </div>
+  <a class="hb-entry" id="hbLink" href="#h" hidden>тетрадь Бориса →</a>
+</div>
+
+<!-- ============ ПАРОЛЬ ============ -->
+<div class="sheet gate" id="viewGate" hidden>
+  <img class="paw-img" src="boris-paw.png" alt="">
+  <svg class="gate-paw" viewBox="0 0 64 64" aria-hidden="true"><g fill="var(--wine)" opacity=".9">
+    <ellipse cx="12.5" cy="23" rx="5.6" ry="8" transform="rotate(-24 12.5 23)"/>
+    <ellipse cx="24.5" cy="14.5" rx="5.8" ry="8.6" transform="rotate(-8 24.5 14.5)"/>
+    <ellipse cx="37.5" cy="14.5" rx="5.8" ry="8.6" transform="rotate(8 37.5 14.5)"/>
+    <ellipse cx="49.5" cy="23" rx="5.6" ry="8" transform="rotate(24 49.5 23)"/>
+    <ellipse cx="31" cy="42" rx="15" ry="12.5"/></g></svg>
+  <h1>Тетрадь Бориса</h1>
+  <p class="sub">Это секретная страничка с сюрпризом. Введите пароль.</p>
+  <form id="gateForm" class="add-form">
+    <input id="gatePass" type="password" placeholder="Пароль" required>
+    <button class="btn btn-wine" type="submit">войти</button>
+  </form>
+  <p class="gate-err" id="gateErr" hidden>Борис вас не узнаёт. Попробуйте ещё раз.</p>
+  <p class="hb-back"><a href="#">← к опросу</a></p>
+</div>
+
+<!-- ============ РУЛЕТКА ============ -->
+<div class="sheet" id="viewSpin" hidden></div>
+
+<!-- ============ ТЕТРАДЬ ============ -->
+<div class="sheet" id="viewNotebook" hidden></div>
+
+<!-- ============ АЛЬБОМ ============ -->
+<div class="sheet" id="viewAlbum" hidden></div>
+
+<!-- полноэкранный просмотр -->
+<div class="lb" id="lb" hidden>
+  <button class="lb-x" id="lbClose" type="button" aria-label="закрыть">×</button>
+  <button class="lb-nav lb-prev" id="lbPrev" type="button" aria-label="назад">←</button>
+  <figure><img id="lbImg" alt=""><figcaption id="lbCap"></figcaption></figure>
+  <button class="lb-nav lb-next" id="lbNext" type="button" aria-label="вперёд">→</button>
+</div>
+
+<!-- модалка «готово» -->
+<div class="modal" id="thanksModal" hidden>
+  <div class="modal-sheet">
+    <h3>Готово!</h3>
+    <p>Борис записал твои ответы и передал их мужу. Спасибо!</p>
+    <p class="r-meow" id="thanksMeow" hidden></p>
+    <p class="gate-err" id="thanksErr" hidden>Не получилось отправить. Проверь интернет и нажми «готово» ещё раз — ответы никуда не пропали.</p>
+    <div class="modal-btns"><button class="btn btn-wine" id="closeThanks" type="button">закрыть</button></div>
+  </div>
+</div>
+
+<script>
+/* ========= НАСТРОЙКИ ========= */
+const PASS='9111940585';
+const SYNC_KEY='FL_SYNC_7c41a9e2b8';
+const CLOUD_URL='https://script.google.com/macros/s/AKfycbz1QW7UCf-LkoryDzdowSDX3El-Mkzj1081dlwDujXo_GUPaGw2c66q0gFEyGrakemM7g/exec';
+
+const SECTIONS=[
+ {id:'walk', name:'Прогулки', items:[
+   {id:'w1',t:'Набережная на закате',u:'https://yandex.ru/maps/?text=набережная'},
+   {id:'w2',t:'Старые улочки и стрит-арт',u:'https://yandex.ru/maps/?text=стрит-арт'},
+   {id:'w3',t:'Оранжерея ботанического сада',u:'https://yandex.ru/maps/?text=ботанический сад оранжерея'}]},
+ {id:'taste', name:'Кафе и рестораны', items:[
+   {id:'t1',t:'Завтрак в новом кафе',u:'https://yandex.ru/maps/?text=кафе с завтраками'},
+   {id:'t2',t:'Дегустация десертов',u:'https://yandex.ru/maps/?text=кондитерская'},
+   {id:'t3',t:'Гастрономический рынок',u:'https://yandex.ru/maps/?text=гастрономический рынок'}]},
+ {id:'soul', name:'Культура', items:[
+   {id:'s1',t:'Выставка, о которой все говорят',u:'https://yandex.ru/maps/?text=художественный музей'},
+   {id:'s2',t:'Вечер в театре',u:'https://yandex.ru/maps/?text=театр'},
+   {id:'s3',t:'Музей, где ты ещё не была',u:'https://yandex.ru/maps/?text=музей'}]},
+ {id:'act', name:'Активности', items:[
+   {id:'a1',t:'Велопрогулка вдвоём',u:'https://yandex.ru/maps/?text=велопрокат'},
+   {id:'a2',t:'Скалодром: первое занятие',u:'https://yandex.ru/maps/?text=скалодром'},
+   {id:'a3',t:'Мастер-класс по керамике',u:'https://yandex.ru/maps/?text=мастер-класс керамика'}]}
+];
+const MEOW=['Мяу!','Мау!','Уррр','Урк','А меня возьмете?','Я с Вами!','Ну, мааам','Не забудьте покормить меня','Я тоже хочу','Не забудьте купить мне игрушку','И без меня?!'];
+const TOTAL=SECTIONS.reduce((s,x)=>s+x.items.length,0);
+const ALL={}; SECTIONS.forEach(s=>s.items.forEach(i=>ALL[i.id]=i));
+const PAW_E='<ellipse cx="12.5" cy="23" rx="5.6" ry="8" transform="rotate(-24 12.5 23)"/><ellipse cx="24.5" cy="14.5" rx="5.8" ry="8.6" transform="rotate(-8 24.5 14.5)"/><ellipse cx="37.5" cy="14.5" rx="5.8" ry="8.6" transform="rotate(8 37.5 14.5)"/><ellipse cx="49.5" cy="23" rx="5.6" ry="8" transform="rotate(24 49.5 23)"/><ellipse cx="31" cy="42" rx="15" ry="12.5"/>';
+
+/* ---------- состояние ---------- */
+const LS_W='fl_wife', LS_H='fl_husb';
+const load=k=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):null}catch(e){return null}};
+let wife=load(LS_W)||{a:{},c:[]};
+let husb=load(LS_H)||null;
+const saveW=()=>localStorage.setItem(LS_W,JSON.stringify(wife));
+const saveH=()=>localStorage.setItem(LS_H,JSON.stringify(husb));
+const unlocked=()=>localStorage.getItem('fl_unlocked')==='1';
+
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $=s=>document.querySelector(s);
+const today=()=>new Date().toISOString().slice(0,10);
+const fmtDate=iso=>{if(!iso)return 'дата не указана';const d=new Date(iso+'T00:00:00');return d.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})};
+const HEART='<svg class="heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
+
+/* подмена лапы на реальный отпечаток */
+function bindPaws(root){
+ (root||document).querySelectorAll('img.paw-img').forEach(im=>{
+  if(im.dataset.bound)return; im.dataset.bound='1';
+  const done=()=>{ if(im.naturalWidth>0) im.classList.add('ok'); };
+  if(im.complete) done(); else im.addEventListener('load',done);
+ });
+}
+
+/* ---------- облако ---------- */
+async function cloudGet(){
+ try{
+  const r=await fetch(CLOUD_URL+'?key='+encodeURIComponent(SYNC_KEY));
+  const j=await r.json();
+  return (j.ok)?j.data:null;
+ }catch(e){return null}
+}
+async function cloudPost(payload){
+ const r=await fetch(CLOUD_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:SYNC_KEY,...payload})});
+ const j=await r.json().catch(()=>null);
+ return !!(j&&j.ok);
+}
+async function syncHusbFromCloud(){
+ const data=await cloudGet();
+ if(data){
+  husb=husb||{};
+  husb.ans=data.a||{};
+  husb.customs=data.c||[];
+  husb.visited=husb.visited||{};
+  husb.extra=husb.extra||{};
+  saveH();
+  return true;
+ }
+ return false;
+}
+async function prefillWife(){
+ if(Object.keys(wife.a).length||wife.c.length)return;
+ const data=await cloudGet();
+ if(data){
+  const a={};
+  Object.entries(data.a||{}).forEach(([k,v])=>{if(ALL[k])a[k]=v===1?'yes':'no'});
+  wife.c=(data.c||[]).map(c=>({id:c.id,t:c.t,u:c.u}));
+  (data.c||[]).forEach(c=>{a[c.id]=c.m===1?'yes':'no'});
+  wife.a=a; saveW();
+ }
+}
+
+/* ---------- INDEXEDDB / EXIF / сжатие ---------- */
+function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('fl-db',1);r.onupgradeneeded=e=>e.target.result.createObjectStore('photos',{keyPath:'id',autoIncrement:true});r.onsuccess=e=>res(e.target.result);r.onerror=()=>rej(r.error)})}
+async function putPhoto(itemId,blob){const db=await idb();return new Promise((res,rej)=>{const tx=db.transaction('photos','readwrite');tx.objectStore('photos').add({itemId,blob});tx.oncomplete=res;tx.onerror=()=>rej(tx.error)})}
+async function getPhotos(itemId){const db=await idb();return new Promise(res=>{const q=db.transaction('photos').objectStore('photos').getAll();q.onsuccess=()=>res(q.result.filter(p=>p.itemId===itemId).sort((a,b)=>a.id-b.id))})}
+function exifDate(buf){
+ try{
+  const v=new DataView(buf); if(v.getUint16(0)!==0xFFD8)return null;
+  let off=2;
+  while(off+8<buf.byteLength){
+    const m=v.getUint16(off), len=v.getUint16(off+2);
+    if(m===0xFFE1){
+      let p=off+4; const sig=[0x45,0x78,0x69,0x66,0,0];
+      for(let i=0;i<6;i++)if(v.getUint8(p+i)!==sig[i])return null;
+      const t=p+6, le=v.getUint16(t)===0x4949;
+      const g16=o=>v.getUint16(t+o,le), g32=o=>v.getUint32(t+o,le);
+      if(g16(2)!==42)return null;
+      const readIFD=b=>{const n=g16(b),r={};for(let i=0;i<n;i++){const e=b+2+i*12;r[g16(e)]=e}return r};
+      const ifd0=readIFD(g32(4));
+      if(ifd0[0x8769]==null)return null;
+      const ei=readIFD(g32(ifd0[0x8769]+8));
+      const str=e=>{const cnt=g32(e+4);let o=g32(e+8);if(cnt<=4)o=e+8;let s='';for(let i=0;i<cnt;i++){const c=v.getUint8(t+o+i);if(!c)break;s+=String.fromCharCode(c)}return s};
+      const raw=(ei[0x9003]!=null)?str(ei[0x9003]):(ei[0x0132]!=null)?str(ei[0x0132]):null;
+      if(!raw)return null;
+      const mm=raw.match(/^(\d{4}):(\d{2}):(\d{2})/);
+      return mm?mm[1]+'-'+mm[2]+'-'+mm[3]:null;
+    }
+    off+=2+len; if(m<0xFF00)break;
+  }
+ }catch(e){}
+ return null;
+}
+async function photoDate(file){
+ try{const d=exifDate(await file.arrayBuffer());if(d)return d}catch(e){}
+ return new Date(file.lastModified).toISOString().slice(0,10);
+}
+async function compress(file){
+ const url=URL.createObjectURL(file);
+ try{
+  const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=url});
+  const sc=Math.min(1,1280/Math.max(img.naturalWidth,img.naturalHeight));
+  const c=document.createElement('canvas');
+  c.width=Math.max(1,Math.round(img.naturalWidth*sc));c.height=Math.max(1,Math.round(img.naturalHeight*sc));
+  c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+  return await new Promise(r=>c.toBlob(r,'image/jpeg',.8))||file;
+ }finally{URL.revokeObjectURL(url)}
+}
+
+/* ---------- ОПРОС ---------- */
+const MARKS=`<div class="marks">
+ <button class="mark yes" type="button" aria-label="Да" aria-pressed="false"><span class="box"><svg viewBox="0 0 22 22"><path d="M4.5 11.5l4.2 4.4L17.5 6.5"/></svg></span></button>
+ <button class="mark no" type="button" aria-label="Нет" aria-pressed="false"><span class="box"><svg viewBox="0 0 22 22"><path d="M6 6l10 10"/><path d="M16 6L6 16"/></svg></span></button></div>`;
+function itemRow(id,t,u,idx){
+ return `<li class="item" data-id="${id}">
+  <div class="q-row"><span class="idx">${idx}</span>
+   <button class="txt" type="button">${esc(t)}</button>${MARKS}</div>
+  ${u?`<div class="pop" hidden><a href="${esc(u)}" target="_blank" rel="noopener">Что это? ↗</a></div>`:''}
+ </li>`;
+}
+function renderSurvey(){
+ let html='';
+ SECTIONS.forEach(s=>{
+  html+=`<h2 class="sec-h">${esc(s.name)}</h2><ol class="list">`+
+   s.items.map((it,k)=>itemRow(it.id,it.t,it.u,String(k+1).padStart(2,'0'))).join('')+`</ol>`;
+ });
+ if(wife.c.length){
+  html+=`<h2 class="sec-h">Идеи жены</h2><ol class="list">`+
+   wife.c.map((c,k)=>itemRow(c.id,c.t,c.u,String(k+1).padStart(2,'0'))).join('')+`</ol>`;
+ }
+ $('#surveyBody').innerHTML=html;
+ document.querySelectorAll('#surveyBody .item').forEach(li=>{
+  const id=li.dataset.id;
+  applyMark(li,wife.a[id]||'');
+  li.querySelectorAll('.mark').forEach(b=>b.addEventListener('click',()=>{
+    const kind=b.classList.contains('yes')?'yes':'no';
+    const next=(wife.a[id]||'')===kind?'':kind;
+    wife.a[id]=next; saveW(); applyMark(li,next); wifeStats();
+  }));
+  const t=li.querySelector('.txt'), pop=li.querySelector('.pop');
+  if(t&&pop)t.addEventListener('click',e=>{
+    e.stopPropagation();
+    document.querySelectorAll('.pop').forEach(p=>{if(p!==pop)p.hidden=true});
+    pop.hidden=!pop.hidden;
+  });
+ });
+ wifeStats();
+ $('#hbLink').hidden=!husb;
+ bindPaws($('#viewSurvey'));
+}
+function applyMark(li,st){
+ li.classList.toggle('answered',!!st);
+ li.querySelectorAll('.mark').forEach(b=>{
+  const k=b.classList.contains('yes')?'yes':'no';
+  b.classList.toggle('active',k===st);
+  b.setAttribute('aria-pressed',k===st);
+ });
+}
+function wifeStats(){
+ const yes=Object.values(wife.a).filter(v=>v==='yes').length;
+ const ans=Object.values(wife.a).filter(v=>v).length;
+ $('#stats').textContent=`одобрено ${yes} из ${TOTAL}`+(wife.c.length?` · своих идей: ${wife.c.length}`:'')+` · отвечено ${ans}/${TOTAL}`;
+ $('#bar').style.width=(ans/TOTAL*100)+'%';
+}
+document.addEventListener('click',()=>document.querySelectorAll('.pop').forEach(p=>p.hidden=true));
+$('#addBtn').addEventListener('click',()=>{$('#addForm').hidden=!$('#addForm').hidden;$('#addName').focus()});
+$('#addForm').addEventListener('submit',e=>{
+ e.preventDefault();
+ const t=$('#addName').value.trim(); if(!t)return;
+ let u=$('#addUrl').value.trim();
+ if(u&&!/^https?:\/\//i.test(u))u='https://yandex.ru/maps/?text='+encodeURIComponent(u);
+ const id='c'+Date.now();
+ wife.c.push({id,t,u}); wife.a[id]='yes';
+ saveW(); renderSurvey();
+ $('#addName').value='';$('#addUrl').value='';$('#addForm').hidden=true;
+});
+$('#resetBtn').addEventListener('click',()=>{wife={a:{},c:[]};saveW();renderSurvey()});
+$('#doneBtn').addEventListener('click',async()=>{
+ const a={}; Object.entries(wife.a).forEach(([k,v])=>{if(ALL[k])a[k]=v==='yes'?1:0});
+ const c=wife.c.map(x=>({id:x.id,t:x.t,u:x.u,m:wife.a[x.id]==='no'?0:1}));
+ $('#doneBtn').disabled=true; $('#doneBtn').textContent='отправляем…';
+ let ok=false;
+ try{ ok=await cloudPost({a,c}); }catch(e){ ok=false; }
+ $('#doneBtn').disabled=false; $('#doneBtn').textContent='готово ♥';
+ $('#thanksMeow').hidden=!ok;
+ $('#thanksErr').hidden=ok;
+ if(ok)$('#thanksMeow').textContent=MEOW[Math.floor(Math.random()*MEOW.length)];
+ $('#thanksModal').hidden=false;
+});
+$('#closeThanks').addEventListener('click',()=>$('#thanksModal').hidden=true);
+
+/* ---------- пароль ---------- */
+let pending='nb';
+$('#gateForm').addEventListener('submit',e=>{
+ e.preventDefault();
+ if($('#gatePass').value===PASS){
+  localStorage.setItem('fl_unlocked','1');
+  $('#gateErr').hidden=true; $('#gatePass').value='';
+  show(pending);
+ }else{
+  $('#gateErr').hidden=false; $('#gatePass').value=''; $('#gatePass').focus();
+ }
+});
+
+/* ---------- пулы и имена ---------- */
+function agreed(){
+ const list=SECTIONS.flatMap(s=>s.items.filter(i=>husb.ans[i.id]===1).map(i=>({...i,sec:s.name})));
+ (husb.customs||[]).forEach(c=>{if(c.m===1)list.push({id:c.id,t:c.t,u:c.u,sec:'Идеи жены'})});
+ return list;
+}
+function pool(){
+ if(husb&&husb.ans)return agreed();
+ const list=[];
+ SECTIONS.forEach(s=>s.items.forEach(i=>{if(wife.a[i.id]==='yes')list.push({...i,sec:s.name})}));
+ wife.c.forEach(c=>{if((wife.a[c.id]||'yes')==='yes')list.push({id:c.id,t:c.t,u:c.u,sec:'Идеи жены'})});
+ return list;
+}
+function nameOf(id){
+ if(ALL[id])return ALL[id].t;
+ const c=(husb&&husb.customs||[]).find(x=>x.id===id); if(c)return c.t;
+ const x=(husb&&husb.extra||{})[id]; if(x)return x.t;
+ return 'идея';
+}
+function secOf(id){
+ if(ALL[id])return SECTIONS.find(s=>s.items.some(i=>i.id===id)).name;
+ if((husb&&husb.customs||[]).some(c=>c.id===id))return 'Идеи жены';
+ return 'Просто вылазка';
+}
+function stampFor(id,entry){
+ if((husb&&husb.customs||[]).some(c=>c.id===id))return '<span class="page-stamp">идея жены</span>';
+ if(entry.src==='boris')return '<span class="page-stamp">выбрано Борисом</span>';
+ if((husb&&husb.extra||{})[id])return '<span class="page-stamp">просто вылазка</span>';
+ return '';
+}
+
+/* ---------- РУЛЕТКА ---------- */
+let rCurrent=null;
+function renderSpin(){
+ $('#viewSpin').innerHTML=`<h1>${HEART}Борис выбирает</h1>
+  <p class="h-sub">рулетка свиданий</p>
+  <section class="roulette">
+   <div class="r-card" id="rCard"><p class="r-hint">Жми кнопку — Борис выберет место для свидания.</p></div>
+   <span class="r-meow" id="rMeow" hidden></span>
+   <div class="r-actions" id="rActions" hidden>
+     <a class="btn btn-ghost" id="rLink" target="_blank" rel="noopener">открыть ↗</a>
+     <button class="btn btn-ink" id="rAgain" type="button">выбрать ещё</button>
+     <button class="btn btn-wine" id="rGo" type="button" ${unlocked()?'':'hidden'}>идём!</button>
+   </div>
+   <button class="btn btn-wine big" id="rPick" type="button">Борис выбирает</button>
+   <div class="nav-row">
+     <a class="btn btn-ghost" href="#">← к опросу</a>
+     <a class="btn btn-ghost" href="#h" ${unlocked()?'':'hidden'}>тетрадь Бориса →</a>
+   </div>
+  </section>`;
+ const pick=()=>{
+  const vis=(husb&&husb.visited)||{};
+  let cand=pool();
+  if(unlocked())cand=cand.filter(i=>!vis[i.id]);
+  const card=$('#rCard');
+  if(!cand.length){card.innerHTML='<p class="r-hint">Пока не из чего выбирать — одобри несколько идей в опросе!</p>';$('#rActions').hidden=true;$('#rMeow').hidden=true;return}
+  $('#rMeow').hidden=true; $('#rActions').hidden=true;
+  let ticks=0;
+  const spin=setInterval(()=>{
+    const r=cand[Math.floor(Math.random()*cand.length)];
+    card.innerHTML=`<p class="r-sec">${esc(r.sec)}</p><p class="r-title">${esc(r.t)}</p>`;
+    if(++ticks>9){
+      clearInterval(spin); rCurrent=r;
+      $('#rActions').hidden=false;
+      $('#rLink').href=r.u||'#'; $('#rLink').style.display=r.u?'':'none';
+      const m=$('#rMeow');
+      m.textContent=MEOW[Math.floor(Math.random()*MEOW.length)];
+      m.hidden=false; m.style.animation='none'; void m.offsetWidth; m.style.animation='';
+    }
+  },70);
+ };
+ $('#rPick').addEventListener('click',pick);
+ $('#rAgain').addEventListener('click',pick);
+ $('#rGo').addEventListener('click',async()=>{
+  if(!rCurrent||!unlocked())return;
+  husb.visited=husb.visited||{};
+  husb.visited[rCurrent.id]={date:today(),src:'boris'};
+  saveH();
+  $('#rCard').innerHTML=`<p class="r-sec">${esc(rCurrent.sec)}</p><p class="r-title">${esc(rCurrent.t)}</p><p class="r-hint" style="margin-top:6px">Отмечено! Фото и отчёт — в тетради Бориса.</p>`;
+  $('#rActions').hidden=true;
+ });
+}
+
+/* ---------- ТЕТРАДЬ ---------- */
+function hrow(i,visited){
+ return `<div class="hrow"><a href="${esc(i.u||'#')}" target="_blank" rel="noopener">${esc(i.t)}</a>`+
+  (visited?`<span class="vdate">${fmtDate(visited.date)}</span>`
+          :`<button class="btn btn-ghost sm go" data-id="${i.id}" type="button">идём!</button>`)+`</div>`;
+}
+async function renderNotebook(){
+ await syncHusbFromCloud();
+ if(!husb||!husb.ans){
+  $('#viewNotebook').innerHTML=`<h1>${HEART}Тетрадь Бориса</h1><p class="sub">Пока нет ответов из облака — жена ещё не нажимала «готово», или нет связи.</p>`;
+  return;
+ }
+ const ag=agreed(), vis=husb.visited||{};
+ const visCount=ag.filter(i=>vis[i.id]).length;
+ let html=`<h1>${HEART}Тетрадь Бориса</h1>
+ <p class="h-sub">режим мужа · только между нами</p>
+ <p class="sub">одобрено ${ag.length} из ${TOTAL} · посещено ${visCount} · свиданий в альбоме: ${Object.keys(vis).length}</p>
+ <div class="nav-row" style="margin-top:0"><a class="btn btn-ghost" href="#spin">← рулетка</a><a class="btn btn-wine" href="#album">альбом →</a></div>`;
+ SECTIONS.forEach(s=>{
+  const its=s.items.filter(i=>husb.ans[i.id]===1);
+  if(!its.length)return;
+  html+=`<h2 class="sec-h">${esc(s.name)}</h2><div class="list">`+its.map(i=>hrow(i,vis[i.id])).join('')+`</div>`;
+ });
+ const cw=(husb.customs||[]).filter(c=>c.m===1);
+ if(cw.length)html+=`<h2 class="sec-h">Идеи жены</h2><div class="list">`+cw.map(i=>hrow(i,vis[i.id])).join('')+`</div>`;
+ if(ag.length&&visCount>=ag.length)html+=`<p class="complete">Список пройден! Борис гордится вами ♥</p>`;
+ html+=`<h2 class="sec-h">Свидания и фото · управление</h2>
+ <button class="btn btn-ghost" id="addDateBtn" type="button">+ добавить свидание</button>
+ <form id="addDateForm" class="add-form" hidden>
+   <input id="adName" required maxlength="80" placeholder="Куда выбрались?">
+   <input id="adUrl" maxlength="200" placeholder="Ссылка (необязательно)">
+   <input id="adDate" type="date">
+   <button class="btn btn-ink" type="submit">добавить</button>
+ </form>
+ <div id="adminList"><p class="r-hint">Пока пусто. Жми «идём!» или добавь свидание вручную.</p></div>
+ <p class="outro-line">Все мероприятия подобраны с особым трепетом и <span>лубовью</span></p>`;
+ $('#viewNotebook').innerHTML=html;
+ $('#addDateBtn').addEventListener('click',()=>{
+  const f=$('#addDateForm'); f.hidden=!f.hidden;
+  if(!f.hidden){$('#adDate').value=today();$('#adName').focus()}
+ });
+ $('#addDateForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const t=$('#adName').value.trim(); if(!t)return;
+  let u=$('#adUrl').value.trim();
+  if(u&&!/^https?:\/\//i.test(u))u='https://yandex.ru/maps/?text='+encodeURIComponent(u);
+  const id='x'+Date.now();
+  husb.extra=husb.extra||{}; husb.extra[id]={t,u};
+  husb.visited=husb.visited||{}; husb.visited[id]={date:$('#adDate').value||today(),manual:true,src:'manual'};
+  saveH(); renderNotebook();
+ });
+ $('#viewNotebook').querySelectorAll('.go').forEach(b=>b.addEventListener('click',async()=>{
+  husb.visited=husb.visited||{};
+  husb.visited[b.dataset.id]={date:today(),src:'list'};
+  saveH(); await renderNotebook();
+ }));
+ await renderAdminCards();
+}
+async function renderAdminCards(){
+ const vis=husb.visited||{};
+ const ids=Object.keys(vis);
+ const box=$('#adminList');
+ if(!ids.length)return;
+ ids.sort((a,b)=>((vis[a].date||'9999')<(vis[b].date||'9999')?-1:1));
+ box.innerHTML='';
+ for(const id of ids){
+  const photos=await getPhotos(id);
+  const card=document.createElement('div');card.className='v-card';card.dataset.item=id;
+  card.innerHTML=`<div class="v-head"><span class="v-date">${fmtDate(vis[id].date)}</span>
+    <button class="btn btn-ghost sm date-edit" type="button">изменить дату</button></div>
+   <p class="v-place">${esc(nameOf(id))} <span class="r-sec">· ${esc(secOf(id))}</span></p>
+   <div class="v-photos">${photos.map(p=>`<img data-pid="${p.id}" alt="">`).join('')}
+    ${photos.length<3?`<button class="v-add" type="button" title="добавить фото">+</button>`:''}</div>
+   <p class="v-note">фото: ${photos.length} из 3 · дата берётся из метаданных снимка</p>
+   <input type="file" accept="image/*" multiple hidden>`;
+  photos.forEach((p,k)=>{const img=card.querySelectorAll('img')[k];if(img)img.src=URL.createObjectURL(p.blob)});
+  card.querySelector('.date-edit').addEventListener('click',()=>{
+    const inp=document.createElement('input');inp.type='date';inp.value=vis[id].date||'';
+    inp.addEventListener('change',()=>{vis[id].date=inp.value;vis[id].manual=true;saveH();renderNotebook()});
+    card.querySelector('.v-date').replaceWith(inp);inp.focus();
+  });
+  const file=card.querySelector('input[type=file]');
+  const add=card.querySelector('.v-add');
+  if(add)add.addEventListener('click',()=>file.click());
+  file.addEventListener('change',async()=>{
+    const have=(await getPhotos(id)).length;
+    const files=[...file.files].slice(0,3-have);
+    for(const f of files){
+      const d=await photoDate(f);
+      if(d&&!vis[id].manual)vis[id].date=d;
+      await putPhoto(id,await compress(f));
+    }
+    saveH(); await renderNotebook();
+  });
+  box.appendChild(card);
+ }
+}
+
+/* ---------- АЛЬБОМ ---------- */
+let LB=[], lbCur=0;
+async function renderAlbumView(){
+ await syncHusbFromCloud();
+ const vis=(husb&&husb.visited)||{};
+ const ids=Object.keys(vis).sort((a,b)=>((vis[a].date||'9999')<(vis[b].date||'9999')?-1:1));
+ const el=$('#viewAlbum');
+ LB=[];
+ let html=`<h1>${HEART}Альбом свиданий</h1><p class="h-sub">тетрадь Бориса · только между нами</p>`;
+ if(!ids.length){
+  html+=`<p class="sub">Альбом пока пуст. Как только в тетради появится первое свидание с фотографиями, здесь вырастут страницы.</p>
+  <div class="alb-tools"><a class="btn btn-ghost" href="#h">← в тетрадь</a></div>`;
+  el.innerHTML=html; return;
+ }
+ const ag=agreed();
+ const X=ag.length, Y=TOTAL+((husb.customs||[]).length);
+ const first=fmtDate(vis[ids[0]].date), last=fmtDate(vis[ids[ids.length-1]].date);
+ html+='<div class="alb-strip" id="albStrip">';
+ html+='<div class="alb-slot"><section class="page covC">'
+  +'<img class="paw-img" src="boris-paw.png" alt="">'
+  +'<svg class="paw-big" viewBox="0 0 64 64"><g>'+PAW_E+'</g></svg>'
+  +'<div class="cov-kicker">Фонд лубви предлагает вспомнить</div>'
+  +'<h2 class="cov-title">Наши свидания</h2>'
+  +'<div class="cov-stats">'+ids.length+' свиданий · '+first+' — '+last+'</div>'
+  +'</section></div>';
+ let n=0;
+ for(const id of ids){
+  n++;
+  const L=((n-1)%5)+1;
+  const photos=await getPhotos(id);
+  const cls=photos.length>=3?['p1','p2','p3']:(photos.length===2?['p1','p3']:['psolo']);
+  const cap=fmtDate(vis[id].date)+' — '+nameOf(id);
+  let figs='';
+  photos.forEach((p,k)=>{
+    const i=LB.push({blob:p.blob,cap:cap})-1;
+    figs+='<figure class="pol '+cls[k]+'"><img data-lb="'+i+'" alt=""></figure>';
+  });
+  const entry=vis[id];
+  html+='<div class="alb-slot"><section class="page L'+L+'">'
+   +'<span class="page-title">Фонд лубви</span>'
+   +'<span class="page-num">стр. '+n+'</span>'
+   +stampFor(id,entry)
+   +(entry.src==='boris'?'<span class="page-paw"><img class="paw-img" src="boris-paw.png" alt=""><svg viewBox="0 0 64 64"><g>'+PAW_E+'</g></svg></span>':'')
+   +'<div class="page-info"><div class="page-date">'+fmtDate(entry.date)+'</div>'
+   +'<div class="page-place">'+esc(nameOf(id))+' <span class="r">· '+esc(secOf(id))+'</span></div></div>'
+   +figs
+   +'</section></div>';
+ }
+ html+='<div class="alb-slot"><section class="page fin"><div>'
+  +'<div class="fin-title">Список пройден!</div>'
+  +'<div class="fin-count">согласовано <b>'+X+'</b> из <b>'+Y+'</b> свиданий</div>'
+  +'<img class="paw-img" src="boris-paw.png" alt="">'
+  +'<svg class="paw-fin" viewBox="0 0 64 64"><g>'+PAW_E+'</g></svg>'
+  +'<div class="fin-sign">Почетный Секретарь<b>Борис</b></div>'
+  +'</div></section></div>';
+ html+='</div>';
+ html+='<div class="alb-arrows"><button class="btn btn-ghost" id="albPrev" type="button">←</button><button class="btn btn-ghost" id="albNext" type="button">→</button></div>';
+ html+='<div class="alb-tools"><a class="btn btn-ghost" href="#h">← тетрадь</a><button class="btn btn-wine" id="printBtn" type="button">распечатать альбом</button></div>';
+ el.innerHTML=html;
+ el.querySelectorAll('img[data-lb]').forEach(img=>{img.src=URL.createObjectURL(LB[+img.dataset.lb].blob)});
+ bindPaws(el);
+ $('#printBtn').addEventListener('click',()=>window.print());
+ const strip=$('#albStrip');
+ const step=()=>{const s=strip.querySelector('.alb-slot');return s?s.offsetWidth+16:300};
+ $('#albPrev').addEventListener('click',()=>strip.scrollBy({left:-step(),behavior:'smooth'}));
+ $('#albNext').addEventListener('click',()=>strip.scrollBy({left:step(),behavior:'smooth'}));
+ fitAlbum();
+}
+function fitAlbum(){
+ const el=$('#viewAlbum');
+ const page=el.querySelector('.page');
+ if(!page)return;
+ const pw=page.offsetWidth||907;
+ const avail=el.clientWidth-8;
+ el.style.setProperty('--albs',Math.min(1,avail/pw));
+}
+window.addEventListener('resize',()=>{if(!$('#viewAlbum').hidden)fitAlbum()});
+
+/* полноэкранный просмотр */
+function lbOpen(i){lbCur=i;lbShow();$('#lb').hidden=false}
+function lbShow(){
+ const e=LB[lbCur];
+ $('#lbImg').src=URL.createObjectURL(e.blob);
+ $('#lbCap').textContent=e.cap;
+ $('#lbPrev').hidden=LB.length<2; $('#lbNext').hidden=LB.length<2;
+}
+function lbStep(d){lbCur=(lbCur+d+LB.length)%LB.length;lbShow()}
+$('#lbClose').addEventListener('click',()=>$('#lb').hidden=true);
+$('#lbPrev').addEventListener('click',()=>lbStep(-1));
+$('#lbNext').addEventListener('click',()=>lbStep(1));
+$('#lb').addEventListener('click',e=>{if(e.target.id==='lb')$('#lb').hidden=true});
+document.addEventListener('click',e=>{
+ const t=e.target.closest('img[data-lb]');
+ if(t)lbOpen(+t.dataset.lb);
+});
+document.addEventListener('keydown',e=>{
+ if(!$('#lb').hidden){
+  if(e.key==='Escape')$('#lb').hidden=true;
+  if(e.key==='ArrowLeft')lbStep(-1);
+  if(e.key==='ArrowRight')lbStep(1);
+  return;
+ }
+ if(!$('#viewAlbum').hidden){
+  const strip=$('#albStrip'); if(!strip)return;
+  const s=strip.querySelector('.alb-slot'); const w=s?s.offsetWidth+16:300;
+  if(e.key==='ArrowLeft')strip.scrollBy({left:-w,behavior:'smooth'});
+  if(e.key==='ArrowRight')strip.scrollBy({left:w,behavior:'smooth'});
+ }
+});
+let tX=null;
+$('#lb').addEventListener('touchstart',e=>{tX=e.touches[0].clientX},{passive:true});
+$('#lb').addEventListener('touchend',e=>{
+ if(tX===null)return;
+ const dx=e.changedTouches[0].clientX-tX; tX=null;
+ if(Math.abs(dx)>40)lbStep(dx<0?1:-1);
+},{passive:true});
+
+/* ---------- роутинг ---------- */
+function route(){
+ const h=location.hash;
+ if(h==='#h'){pending='nb';return unlocked()?show('nb'):show('gate')}
+ if(h==='#album'){pending='alb';return unlocked()?show('alb'):show('gate')}
+ if(h==='#spin')return show('spin');
+ show('s');
+}
+function show(v){
+ $('#viewSurvey').hidden=v!=='s';
+ $('#viewGate').hidden=v!=='gate';
+ $('#viewSpin').hidden=v!=='spin';
+ $('#viewNotebook').hidden=v!=='nb';
+ $('#viewAlbum').hidden=v!=='alb';
+ if(v==='s')renderSurvey();
+ if(v==='spin')renderSpin();
+ if(v==='nb')renderNotebook();
+ if(v==='alb')renderAlbumView();
+ if(v==='gate')bindPaws($('#viewGate'));
+ window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',route);
+renderSurvey();
+prefillWife().then(()=>{ if(!$('#viewSurvey').hidden) renderSurvey(); });
+route();
+window.addEventListener('load',fitAlbum);
+</script>
+</body>
+</html>
